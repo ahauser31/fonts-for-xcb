@@ -404,7 +404,7 @@ xcbft_load_glyphs(xcb_connection_t *c, XcbftFace *face, UtfHolder text, xcb_rend
 	xcb_render_create_glyph_set(c, gs, fmt_a8->id);
 
 	if (gi) {
-		*gi = (xcb_render_glyphinfo_t *)malloc(sizeof(xcb_render_glyphinfo_t) * text.length);
+		*gi = (xcb_render_glyphinfo_t *)calloc(text.length, sizeof(xcb_render_glyphinfo_t));
 	}
 
 	for (i = 0; i < text.length; i++) {
@@ -413,7 +413,7 @@ xcbft_load_glyphs(xcb_connection_t *c, XcbftFace *face, UtfHolder text, xcb_rend
 		/* if (!glyph_index) */
 			/* fprintf(stderr, "glyph not found"); */
 
-		glyph_advance = xcbft_load_glyph(c, gs, face->face, text.str[i], gi ? gi[i] : NULL);
+		glyph_advance = xcbft_load_glyph(c, gs, face->face, text.str[i], gi ? &(*gi)[i] : NULL);
 		total_advance.x += glyph_advance.x;
 		total_advance.y += glyph_advance.y;
 	}
@@ -453,13 +453,12 @@ xcbft_load_glyph(xcb_connection_t *c, xcb_render_glyphset_t gs, FT_Face face, in
 	ginfo.height = bitmap->rows;
 	glyph_advance.x = face->glyph->advance.x >> 6;
 	glyph_advance.y = face->glyph->advance.y >> 6;
-	/* ginfo.x_off = glyph_advance.x; */
-	/* ginfo.y_off = glyph_advance.y; */
 
 	/* Experimental hack: fix for wrong ascent of emoji */
 	/* TODO: Only recalculate offset for x when horizontal text and y only when vertical text */
 	ginfo.x_off = glyph_advance.x > ginfo.width ? glyph_advance.x : ginfo.width;
 	/* ginfo.y_off = glyph_advance.y > ginfo.height ? glyph_advance.y : ginfo.height; */
+	ginfo.y_off = glyph_advance.y;
 
 	if (gi) {
 		gi->x = ginfo.x;
