@@ -71,11 +71,7 @@ xcbft_char_to_uint32(const char *str)
 	}
 
 	while (*(str+shift)) {
-		shift += FcUtf8ToUcs4(
-			(FcChar8*)(str+shift),
-			output+length,
-			strlen(str)-shift
-		);
+		shift += FcUtf8ToUcs4((FcChar8*)(str+shift), output+length, strlen(str)-shift);
 		length++;
 	}
 
@@ -469,11 +465,11 @@ xcbft_load_glyph(xcb_connection_t *c, xcb_render_glyphset_t gs, FT_Face face, in
 		gi->y_off = ginfo.y_off;
 	}
 
-	// keep track of the max horiBearingY (yMax) and yMin
-	// 26.6 fractional pixel format
-	// yMax = face->glyph->metrics.horiBearingY/64; (yMax);
-	// yMin = -(face->glyph->metrics.height -
-	//		face->glyph->metrics.horiBearingY)/64;
+	/* keep track of the max horiBearingY (yMax) and yMin */
+	/* 26.6 fractional pixel format */
+	/* yMax = face->glyph->metrics.horiBearingY/64; (yMax); */
+	/* yMin = -(face->glyph->metrics.height - */
+	/*		face->glyph->metrics.horiBearingY)/64; */
 
 	gid = charcode;
 
